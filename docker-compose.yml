@@ -1,0 +1,9 @@
+version: "3.9"
+
+services:
+  trocr:
+    build: .
+    container_name: trocr_ocr
+    volumes:
+      - .:/app
+    command: python main.py
