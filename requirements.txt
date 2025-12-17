@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+pillow
+pdf2image
+easyocr
+torch>=2.0.0
+python-multipart

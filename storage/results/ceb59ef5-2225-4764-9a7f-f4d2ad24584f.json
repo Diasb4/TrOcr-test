@@ -1,0 +1,5 @@
+{
+  "job_id": "ceb59ef5-2225-4764-9a7f-f4d2ad24584f",
+  "status": "error",
+  "error": "Can't load image processor for 'microsoft/trocr-large-printed'. If you were trying to load it from 'https://huggingface.co/models', make sure you don't have a local directory with the same name. Otherwise, make sure 'microsoft/trocr-large-printed' is the correct path to a directory containing a preprocessor_config.json file"
+}

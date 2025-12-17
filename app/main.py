@@ -2,25 +2,32 @@ from fastapi import FastAPI, UploadFile, BackgroundTasks, HTTPException, Form, F
 from pathlib import Path
 import uuid
 import json
+from concurrent.futures import ThreadPoolExecutor
 from pdf_extractor import extract_target_page
 
 from worker import process_pdf_job
 
 app = FastAPI()
 
-
 UPLOAD_DIR = Path("storage/uploads")
-UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+RESULT_DIR = Path("storage/results")
 
+UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+RESULT_DIR.mkdir(parents=True, exist_ok=True)
+
+# loading the model to thread
+executor = ThreadPoolExecutor(max_workers=2)
+
+def run_in_executor(job_id: str, pdf_path: str, phrase: str):
+    # wrapper to run OCR in separate thread
+    executor.submit(process_pdf_job, job_id, pdf_path, phrase)
 # upload pdf
 @app.post("/upload-pdf")
 async def upload_pdf(
-    file: UploadFile,
+    file: UploadFile = File(...),
     phrase: str = Form(...),
     # default argument
     background_tasks: BackgroundTasks = None,
-
-
 ):
     if not file.filename.endswith(".pdf"):
         raise HTTPException(status_code=400, detail="PDF only")
@@ -28,11 +35,11 @@ async def upload_pdf(
     job_id = str(uuid.uuid4())
     pdf_path = UPLOAD_DIR / f"{job_id}.pdf"
 
-    # Save uploaded PDF
+    # save uploaded PDF
     with open(pdf_path, "wb") as f:
         f.write(await file.read())
 
-    # Run OCR in background
+    # Run OCR in background (non blocking)
     background_tasks.add_task(
         process_pdf_job,
         job_id,
@@ -44,12 +51,15 @@ async def upload_pdf(
         "job_id": job_id,
         "status": "processing"
     }
+
+
 # get by ID 
 @app.get("/result/{job_id}")
 def get_result(job_id: str):
-    result_file = Path("storage/results") / f"{job_id}.json"
+    result_file = RESULT_DIR / f"{job_id}.json"
+
     if not result_file.exists():
         return {"status": "pending"}
-    import json
+
     with open(result_file, "r", encoding="utf-8") as f:
         return json.load(f)

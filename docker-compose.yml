@@ -1,9 +1,58 @@
+# version: "3.9"
+
+# services:
+#   trocr_api:
+#     build: .
+#     container_name: trocr_api
+#     ports:
+#       - "8000:8000"
+#     # restart: unless-stopped
+#     volumes:
+#       # - ~/.cache/huggingface:/root/.cache/huggingface
+#       - ./storage:/app/storage
+#     deploy:
+#       resources:
+#         limits:
+#           cpus: "2.0"
+#           memory: 4G
+
+#     # Required for pdf2image / PIL
+#     shm_size: "1gb"
+
+#     restart: unless-stopped
+
+    
+
 version: "3.9"
 
 services:
+  # -----------------------------
+  # Main FastAPI API
+  # -----------------------------
   trocr_api:
     build: .
     container_name: trocr_api
     ports:
       - "8000:8000"
+    volumes:
+      - ./storage:/app/storage       # persist uploads/results
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 4G
+    # Required for pdf2image / PIL
+    shm_size: "1gb"
+
+  # -----------------------------
+  # Optional runner / preloader
+  # -----------------------------
+  # pdf_runner:
+  #   build: .
+  #   container_name: pdf_runner
+  #   command: ["python", "test_pdf.py"]  # runs your test PDF script once
+  #   volumes:
+  #     - ./storage:/app/storage
+  #   restart: "no"   # runs once and stops
+  #   shm_size: "1gb"
