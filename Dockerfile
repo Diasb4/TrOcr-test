@@ -1,36 +1,34 @@
-FROM python:3.9-slim
+FROM python:3.10-slim
 
-# Python behavior
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-ENV PYTHONPATH=/app
+WORKDIR /app
 
-# System dependencies (PDF + images)
+# Установим системные зависимости
 RUN apt-get update && apt-get install -y \
     poppler-utils \
     libgl1 \
-    git \
+    libglib2.0-0 \
+    libgomp1 \
+    libgcc-s1 \
     && rm -rf /var/lib/apt/lists/*
 
-# Working directory
-WORKDIR /app
+# Копируем файлы
+COPY . /app
 
-# Python dependencies
-RUN pip install --no-cache-dir \
-    fastapi \
-    uvicorn \
-    torch \
-    torchvision \
-    transformers \
-    pillow \
-    python-multipart \
-    pdf2image
+# Обновляем pip
+RUN pip install --upgrade pip
 
-# Copy the CONTENTS of app/ into /app
-COPY app /app
+# Устанавливаем пакеты по одному (так надежнее)
+RUN pip install --no-cache-dir fastapi
+RUN pip install --no-cache-dir uvicorn[standard]
+RUN pip install --no-cache-dir python-multipart
+RUN pip install --no-cache-dir pillow
+RUN pip install --no-cache-dir pdf2image
+RUN pip install --no-cache-dir paddlepaddle
+RUN pip install --no-cache-dir paddleocr
 
-# Expose API port
+# Создаём директории
+RUN mkdir -p uploads train results
+
 EXPOSE 8000
 
-# Start FastAPI
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
