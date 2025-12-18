@@ -9,7 +9,7 @@ from PIL import Image
 
 
 # global reader
-reader = easyocr.Reader(["en"], gpu=False)
+reader = easyocr.Reader(["ru"], gpu=False)
 
 # Normalization
 def normalize(s: str) -> str:
@@ -36,7 +36,7 @@ def pdf_to_images(pdf_path: str, out_dir="pages", dpi=150):
 # Extract target page and text below phrase
 def extract_target_page(pdf_path: str, phrase: str, out_dir="pages", dpi=150):
     phrase_norm = normalize(phrase)
-    # reader = easyocr.Reader(["en"])
+    # reader = easyocr.Reader(['ru, 'kz])
     png_files = pdf_to_images(pdf_path, out_dir, dpi)
 
     results = []

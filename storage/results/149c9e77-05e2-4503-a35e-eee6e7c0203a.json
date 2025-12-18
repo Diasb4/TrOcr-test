@@ -1,5 +1,0 @@
-{
-  "job_id": "149c9e77-05e2-4503-a35e-eee6e7c0203a",
-  "status": "error",
-  "error": "Invalid input type. Supporting format = string(file path or url), bytes, numpy array"
-}

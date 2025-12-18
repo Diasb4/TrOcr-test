@@ -1,36 +1,31 @@
-
-
-from pdf_extractor import extract_target_page
-from pathlib import Path
-import torch
+import time
 import json
+from pathlib import Path
+from pdf_extractor import extract_target_page
 
 RESULT_DIR = Path("storage/results")
-RESULT_DIR.mkdir(parents=True, exist_ok=True)
 
 def process_pdf_job(job_id: str, pdf_path: str, phrase: str):
+    # job start
+    total_start = time.perf_counter()
 
-    try:
-        torch.set_num_threads(1)
+    # pdf_start = time.perf_counter()
+    result = extract_target_page(pdf_path, phrase)
+    # pdf_duration = (time.perf_counter() - pdf_start) * 1000
 
-        result = extract_target_page(
-            pdf_path=pdf_path,
-            phrase=phrase
+
+    total_duration = (time.perf_counter() - total_start) * 1000
+
+    with open(RESULT_DIR / f"{job_id}.json", "w", encoding="utf-8") as f:
+        json.dump(
+            {
+                "job_id": job_id,
+                "result": result,
+                # "pdf_processing_time_ms": round(pdf_duration, 2),
+                "total_processing_time_ms": round(total_duration, 2)
+            },
+            f,
+            ensure_ascii=False,
+            indent=2
         )
-
-        output_path = RESULT_DIR / f"{job_id}.json"
-        with open(output_path, "w", encoding="utf-8") as f:
-            json.dump({
-                "job_id": job_id,
-                "status": "completed",
-                "data": result
-            }, f, ensure_ascii=False, indent=2)
-
-    except Exception as e:
-        error_path = RESULT_DIR / f"{job_id}.json"
-        with open(error_path, "w", encoding="utf-8") as f:
-            json.dump({
-                "job_id": job_id,
-                "status": "error",
-                "error": str(e)
-            }, f, indent=2)
+    print(f"[INFO] Job {job_id} processed. Total time: {round(total_duration, 2)} ms")
