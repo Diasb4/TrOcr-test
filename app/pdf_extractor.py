@@ -36,10 +36,7 @@ def pdf_to_images(pdf_path: str, out_dir="pages", dpi=150):
 # Extract target page and text below phrase
 def extract_target_page(pdf_path: str, phrase: str, out_dir="pages", dpi=150):
     phrase_norm = normalize(phrase)
-<<<<<<< HEAD
     # reader = easyocr.Reader(['ru, 'kz])
-=======
->>>>>>> 2f0c3951e645b3df5c5c83faec8f330af8f86059
     png_files = pdf_to_images(pdf_path, out_dir, dpi)
 
     for png_file in png_files:
