@@ -1,4 +1,3 @@
-# worker.py
 import time
 import json
 from pathlib import Path
