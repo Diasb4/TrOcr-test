@@ -16,7 +16,7 @@ def process_pdf_job(job_id: str, pdf_path: str, phrase: str):
         json.dump(
             {
                 "job_id": job_id,
-                "processing_time_ms": round(duration, 2),
+                "job_processing_time_ms": round(duration, 2),
                 "result": result
             },
             f,
