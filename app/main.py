@@ -13,7 +13,7 @@ app = FastAPI()
 async def timing_middleware(request: Request, call_next):
     start = time.perf_counter()
     response = await call_next(request)
-    duration = (time.perf_counter() - start) 
+    duration = (time.perf_counter() - start) * 1000
     response.headers["X-Process-Time-ms"] = f"{duration:.2f}"
     print(f"{request.method} {request.url.path} took {duration:.2f} ms")
     return response

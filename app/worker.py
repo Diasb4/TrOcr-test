@@ -20,9 +20,8 @@ def process_pdf_job(job_id: str, pdf_path: str, phrase: str):
         json.dump(
             {
                 "job_id": job_id,
-                "result": result,
-                # "pdf_processing_time_ms": round(pdf_duration, 2),
-                "total_processing_time_ms": round(total_duration, 2)
+                "processing_time_ms": round(duration, 2),
+                "result": result
             },
             f,
             ensure_ascii=False,
